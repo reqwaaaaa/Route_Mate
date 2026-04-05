@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.route.mapper.RouteMessageRecordMapper">
+    
+    <resultMap type="RouteMessageRecord" id="RouteMessageRecordResult">
+        <result property="messageId"    column="message_id"    />
+        <result property="senderId"    column="sender_id"    />
+        <result property="userName"    column="userName"    />
+        <result property="receiverId"    column="receiver_id"    />
+        <result property="userName1"    column="userName1"    />
+        <result property="messageTitle"    column="message_title"    />
+        <result property="messageContent"    column="message_content"    />
+        <result property="messageType"    column="message_type"    />
+        <result property="messageImages"    column="message_images"    />
+        <result property="relatedId"    column="related_id"    />
+        <result property="relatedType"    column="related_type"    />
+        <result property="readStatus"    column="read_status"    />
+        <result property="sendTime"    column="send_time"    />
+        <result property="readTime"    column="read_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRouteMessageRecordVo">
+        select t.message_id, t.sender_id, fk_senderId.user_name as userName, t.receiver_id, fk_receiverId.user_name as userName1, t.message_title, t.message_content, t.message_type, t.message_images, t.related_id, t.related_type, t.read_status, t.send_time, t.read_time, t.del_flag, t.create_by, t.create_time, t.update_by, t.update_time, t.remark
+        from route_message_record t
+        left join sys_user fk_senderId on t.sender_id = fk_senderId.user_id
+        left join sys_user fk_receiverId on t.receiver_id = fk_receiverId.user_id
+    </sql>
+
+    <select id="selectRouteMessageRecordList" parameterType="RouteMessageRecord" resultMap="RouteMessageRecordResult">
+        <include refid="selectRouteMessageRecordVo"/>
+        <where>  
+            <if test="senderId != null "> and t.sender_id = #{senderId}</if>
+            <if test="receiverId != null "> and t.receiver_id = #{receiverId}</if>
+            <if test="messageTitle != null  and messageTitle != ''"> and t.message_title = #{messageTitle}</if>
+            <if test="messageContent != null  and messageContent != ''"> and t.message_content = #{messageContent}</if>
+            <if test="messageType != null  and messageType != ''"> and t.message_type = #{messageType}</if>
+            <if test="messageImages != null  and messageImages != ''"> and t.message_images = #{messageImages}</if>
+            <if test="relatedId != null  and relatedId != ''"> and t.related_id = #{relatedId}</if>
+            <if test="relatedType != null  and relatedType != ''"> and t.related_type = #{relatedType}</if>
+            <if test="readStatus != null  and readStatus != ''"> and t.read_status = #{readStatus}</if>
+            <if test="sendTime != null "> and t.send_time = #{sendTime}</if>
+            <if test="readTime != null "> and t.read_time = #{readTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectRouteMessageRecordByMessageId" parameterType="Long" resultMap="RouteMessageRecordResult">
+        <include refid="selectRouteMessageRecordVo"/>
+        where t.message_id = #{messageId}
+    </select>
+
+    <insert id="insertRouteMessageRecord" parameterType="RouteMessageRecord" useGeneratedKeys="true" keyProperty="messageId">
+        insert into route_message_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="senderId != null">sender_id,</if>
+            <if test="receiverId != null">receiver_id,</if>
+            <if test="messageTitle != null and messageTitle != ''">message_title,</if>
+            <if test="messageContent != null and messageContent != ''">message_content,</if>
+            <if test="messageType != null and messageType != ''">message_type,</if>
+            <if test="messageImages != null">message_images,</if>
+            <if test="relatedId != null">related_id,</if>
+            <if test="relatedType != null">related_type,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="sendTime != null">send_time,</if>
+            <if test="readTime != null">read_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="senderId != null">#{senderId},</if>
+            <if test="receiverId != null">#{receiverId},</if>
+            <if test="messageTitle != null and messageTitle != ''">#{messageTitle},</if>
+            <if test="messageContent != null and messageContent != ''">#{messageContent},</if>
+            <if test="messageType != null and messageType != ''">#{messageType},</if>
+            <if test="messageImages != null">#{messageImages},</if>
+            <if test="relatedId != null">#{relatedId},</if>
+            <if test="relatedType != null">#{relatedType},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="sendTime != null">#{sendTime},</if>
+            <if test="readTime != null">#{readTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRouteMessageRecord" parameterType="RouteMessageRecord">
+        update route_message_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="senderId != null">sender_id = #{senderId},</if>
+            <if test="receiverId != null">receiver_id = #{receiverId},</if>
+            <if test="messageTitle != null and messageTitle != ''">message_title = #{messageTitle},</if>
+            <if test="messageContent != null and messageContent != ''">message_content = #{messageContent},</if>
+            <if test="messageType != null and messageType != ''">message_type = #{messageType},</if>
+            <if test="messageImages != null">message_images = #{messageImages},</if>
+            <if test="relatedId != null">related_id = #{relatedId},</if>
+            <if test="relatedType != null">related_type = #{relatedType},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="sendTime != null">send_time = #{sendTime},</if>
+            <if test="readTime != null">read_time = #{readTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where message_id = #{messageId}
+    </update>
+
+    <delete id="deleteRouteMessageRecordByMessageId" parameterType="Long">
+        delete from route_message_record where message_id = #{messageId}
+    </delete>
+
+    <delete id="deleteRouteMessageRecordByMessageIds" parameterType="String">
+        delete from route_message_record where message_id in 
+        <foreach item="messageId" collection="array" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+    </delete>
+
+    <!-- 查询发送者ID（关联sys_user.user_id）（关联用户信息表）选项列表 -->
+    <select id="selectSenderIdOptions" resultType="java.util.HashMap">
+        select 
+            user_id,
+            user_name as userName
+        from sys_user
+        order by user_id desc
+    </select>
+
+    <!-- 查询接收者ID（关联sys_user.user_id，系统消息时为空）（关联用户信息表）选项列表 -->
+    <select id="selectReceiverIdOptions" resultType="java.util.HashMap">
+        select 
+            user_id,
+            user_name as userName1
+        from sys_user
+        order by user_id desc
+    </select>
+</mapper>

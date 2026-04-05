@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.route.mapper.RouteTrajectoryInfoMapper">
+    
+    <resultMap type="RouteTrajectoryInfo" id="RouteTrajectoryInfoResult">
+        <result property="trajectoryId"    column="trajectory_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="userName"    />
+        <result property="trajectoryName"    column="trajectory_name"    />
+        <result property="trajectoryDesc"    column="trajectory_desc"    />
+        <result property="startLocation"    column="start_location"    />
+        <result property="endLocation"    column="end_location"    />
+        <result property="totalDistance"    column="total_distance"    />
+        <result property="totalDuration"    column="total_duration"    />
+        <result property="pointCount"    column="point_count"    />
+        <result property="trajectoryData"    column="trajectory_data"    />
+        <result property="trajectoryImages"    column="trajectory_images"    />
+        <result property="trajectoryStatus"    column="trajectory_status"    />
+        <result property="isPublic"    column="is_public"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRouteTrajectoryInfoVo">
+        select t.trajectory_id, t.user_id, fk_userId.user_name as userName, t.trajectory_name, t.trajectory_desc, t.start_location, t.end_location, t.total_distance, t.total_duration, t.point_count, t.trajectory_data, t.trajectory_images, t.trajectory_status, t.is_public, t.del_flag, t.create_by, t.create_time, t.update_by, t.update_time, t.remark
+        from route_trajectory_info t
+        left join sys_user fk_userId on t.user_id = fk_userId.user_id
+    </sql>
+
+    <select id="selectRouteTrajectoryInfoList" parameterType="RouteTrajectoryInfo" resultMap="RouteTrajectoryInfoResult">
+        <include refid="selectRouteTrajectoryInfoVo"/>
+        <where>  
+            <if test="userId != null "> and t.user_id = #{userId}</if>
+            <if test="trajectoryName != null  and trajectoryName != ''"> and t.trajectory_name like concat('%', #{trajectoryName}, '%')</if>
+            <if test="trajectoryDesc != null  and trajectoryDesc != ''"> and t.trajectory_desc = #{trajectoryDesc}</if>
+            <if test="startLocation != null  and startLocation != ''"> and t.start_location = #{startLocation}</if>
+            <if test="endLocation != null  and endLocation != ''"> and t.end_location = #{endLocation}</if>
+            <if test="totalDistance != null "> and t.total_distance = #{totalDistance}</if>
+            <if test="totalDuration != null "> and t.total_duration = #{totalDuration}</if>
+            <if test="pointCount != null "> and t.point_count = #{pointCount}</if>
+            <if test="trajectoryData != null  and trajectoryData != ''"> and t.trajectory_data = #{trajectoryData}</if>
+            <if test="trajectoryImages != null  and trajectoryImages != ''"> and t.trajectory_images = #{trajectoryImages}</if>
+            <if test="trajectoryStatus != null  and trajectoryStatus != ''"> and t.trajectory_status = #{trajectoryStatus}</if>
+            <if test="isPublic != null  and isPublic != ''"> and t.is_public = #{isPublic}</if>
+        </where>
+    </select>
+    
+    <select id="selectRouteTrajectoryInfoByTrajectoryId" parameterType="Long" resultMap="RouteTrajectoryInfoResult">
+        <include refid="selectRouteTrajectoryInfoVo"/>
+        where t.trajectory_id = #{trajectoryId}
+    </select>
+
+    <insert id="insertRouteTrajectoryInfo" parameterType="RouteTrajectoryInfo" useGeneratedKeys="true" keyProperty="trajectoryId">
+        insert into route_trajectory_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="trajectoryName != null">trajectory_name,</if>
+            <if test="trajectoryDesc != null">trajectory_desc,</if>
+            <if test="startLocation != null">start_location,</if>
+            <if test="endLocation != null">end_location,</if>
+            <if test="totalDistance != null">total_distance,</if>
+            <if test="totalDuration != null">total_duration,</if>
+            <if test="pointCount != null">point_count,</if>
+            <if test="trajectoryData != null">trajectory_data,</if>
+            <if test="trajectoryImages != null">trajectory_images,</if>
+            <if test="trajectoryStatus != null">trajectory_status,</if>
+            <if test="isPublic != null">is_public,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="trajectoryName != null">#{trajectoryName},</if>
+            <if test="trajectoryDesc != null">#{trajectoryDesc},</if>
+            <if test="startLocation != null">#{startLocation},</if>
+            <if test="endLocation != null">#{endLocation},</if>
+            <if test="totalDistance != null">#{totalDistance},</if>
+            <if test="totalDuration != null">#{totalDuration},</if>
+            <if test="pointCount != null">#{pointCount},</if>
+            <if test="trajectoryData != null">#{trajectoryData},</if>
+            <if test="trajectoryImages != null">#{trajectoryImages},</if>
+            <if test="trajectoryStatus != null">#{trajectoryStatus},</if>
+            <if test="isPublic != null">#{isPublic},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRouteTrajectoryInfo" parameterType="RouteTrajectoryInfo">
+        update route_trajectory_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="trajectoryName != null">trajectory_name = #{trajectoryName},</if>
+            <if test="trajectoryDesc != null">trajectory_desc = #{trajectoryDesc},</if>
+            <if test="startLocation != null">start_location = #{startLocation},</if>
+            <if test="endLocation != null">end_location = #{endLocation},</if>
+            <if test="totalDistance != null">total_distance = #{totalDistance},</if>
+            <if test="totalDuration != null">total_duration = #{totalDuration},</if>
+            <if test="pointCount != null">point_count = #{pointCount},</if>
+            <if test="trajectoryData != null">trajectory_data = #{trajectoryData},</if>
+            <if test="trajectoryImages != null">trajectory_images = #{trajectoryImages},</if>
+            <if test="trajectoryStatus != null">trajectory_status = #{trajectoryStatus},</if>
+            <if test="isPublic != null">is_public = #{isPublic},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where trajectory_id = #{trajectoryId}
+    </update>
+
+    <delete id="deleteRouteTrajectoryInfoByTrajectoryId" parameterType="Long">
+        delete from route_trajectory_info where trajectory_id = #{trajectoryId}
+    </delete>
+
+    <delete id="deleteRouteTrajectoryInfoByTrajectoryIds" parameterType="String">
+        delete from route_trajectory_info where trajectory_id in 
+        <foreach item="trajectoryId" collection="array" open="(" separator="," close=")">
+            #{trajectoryId}
+        </foreach>
+    </delete>
+
+    <!-- 查询用户ID（关联sys_user.user_id）（关联用户信息表）选项列表 -->
+    <select id="selectUserIdOptions" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select 
+            user_id,
+            user_name as userName
+        from sys_user
+        <where>
+            <if test="currentUserId != null and currentUserId != 1">
+                and user_id = #{currentUserId}
+            </if>
+        </where>
+        order by user_id desc
+    </select>
+</mapper>

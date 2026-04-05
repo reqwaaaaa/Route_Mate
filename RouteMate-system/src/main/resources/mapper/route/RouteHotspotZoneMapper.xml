@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.route.mapper.RouteHotspotZoneMapper">
+    
+    <resultMap type="RouteHotspotZone" id="RouteHotspotZoneResult">
+        <result property="hotspotId"    column="hotspot_id"    />
+        <result property="hotspotName"    column="hotspot_name"    />
+        <result property="hotspotType"    column="hotspot_type"    />
+        <result property="centerLatitude"    column="center_latitude"    />
+        <result property="centerLongitude"    column="center_longitude"    />
+        <result property="radius"    column="radius"    />
+        <result property="visitCount"    column="visit_count"    />
+        <result property="uniqueUsers"    column="unique_users"    />
+        <result property="peakHour"    column="peak_hour"    />
+        <result property="avgDuration"    column="avg_duration"    />
+        <result property="relatedPois"    column="related_pois"    />
+        <result property="hotspotImages"    column="hotspot_images"    />
+        <result property="analysisTaskId"    column="analysis_task_id"    />
+        <result property="taskName"    column="taskName"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRouteHotspotZoneVo">
+        select t.hotspot_id, t.hotspot_name, t.hotspot_type, t.center_latitude, t.center_longitude, t.radius, t.visit_count, t.unique_users, t.peak_hour, t.avg_duration, t.related_pois, t.hotspot_images, t.analysis_task_id, fk_analysisTaskId.task_name as taskName, t.create_by, t.create_time, t.update_by, t.update_time, t.remark
+        from route_hotspot_zone t
+        left join route_analysis_task fk_analysisTaskId on t.analysis_task_id = fk_analysisTaskId.task_id
+    </sql>
+
+    <select id="selectRouteHotspotZoneList" parameterType="RouteHotspotZone" resultMap="RouteHotspotZoneResult">
+        <include refid="selectRouteHotspotZoneVo"/>
+        <where>  
+            <if test="hotspotName != null  and hotspotName != ''"> and t.hotspot_name like concat('%', #{hotspotName}, '%')</if>
+            <if test="hotspotType != null  and hotspotType != ''"> and t.hotspot_type = #{hotspotType}</if>
+            <if test="centerLatitude != null "> and t.center_latitude = #{centerLatitude}</if>
+            <if test="centerLongitude != null "> and t.center_longitude = #{centerLongitude}</if>
+            <if test="radius != null "> and t.radius = #{radius}</if>
+            <if test="visitCount != null "> and t.visit_count = #{visitCount}</if>
+            <if test="uniqueUsers != null "> and t.unique_users = #{uniqueUsers}</if>
+            <if test="peakHour != null  and peakHour != ''"> and t.peak_hour = #{peakHour}</if>
+            <if test="avgDuration != null "> and t.avg_duration = #{avgDuration}</if>
+            <if test="relatedPois != null  and relatedPois != ''"> and t.related_pois = #{relatedPois}</if>
+            <if test="hotspotImages != null  and hotspotImages != ''"> and t.hotspot_images = #{hotspotImages}</if>
+            <if test="analysisTaskId != null  and analysisTaskId != ''"> and t.analysis_task_id = #{analysisTaskId}</if>
+        </where>
+    </select>
+    
+    <select id="selectRouteHotspotZoneByHotspotId" parameterType="Long" resultMap="RouteHotspotZoneResult">
+        <include refid="selectRouteHotspotZoneVo"/>
+        where t.hotspot_id = #{hotspotId}
+    </select>
+
+    <insert id="insertRouteHotspotZone" parameterType="RouteHotspotZone" useGeneratedKeys="true" keyProperty="hotspotId">
+        insert into route_hotspot_zone
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="hotspotName != null and hotspotName != ''">hotspot_name,</if>
+            <if test="hotspotType != null and hotspotType != ''">hotspot_type,</if>
+            <if test="centerLatitude != null">center_latitude,</if>
+            <if test="centerLongitude != null">center_longitude,</if>
+            <if test="radius != null">radius,</if>
+            <if test="visitCount != null">visit_count,</if>
+            <if test="uniqueUsers != null">unique_users,</if>
+            <if test="peakHour != null">peak_hour,</if>
+            <if test="avgDuration != null">avg_duration,</if>
+            <if test="relatedPois != null">related_pois,</if>
+            <if test="hotspotImages != null">hotspot_images,</if>
+            <if test="analysisTaskId != null">analysis_task_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="hotspotName != null and hotspotName != ''">#{hotspotName},</if>
+            <if test="hotspotType != null and hotspotType != ''">#{hotspotType},</if>
+            <if test="centerLatitude != null">#{centerLatitude},</if>
+            <if test="centerLongitude != null">#{centerLongitude},</if>
+            <if test="radius != null">#{radius},</if>
+            <if test="visitCount != null">#{visitCount},</if>
+            <if test="uniqueUsers != null">#{uniqueUsers},</if>
+            <if test="peakHour != null">#{peakHour},</if>
+            <if test="avgDuration != null">#{avgDuration},</if>
+            <if test="relatedPois != null">#{relatedPois},</if>
+            <if test="hotspotImages != null">#{hotspotImages},</if>
+            <if test="analysisTaskId != null">#{analysisTaskId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRouteHotspotZone" parameterType="RouteHotspotZone">
+        update route_hotspot_zone
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="hotspotName != null and hotspotName != ''">hotspot_name = #{hotspotName},</if>
+            <if test="hotspotType != null and hotspotType != ''">hotspot_type = #{hotspotType},</if>
+            <if test="centerLatitude != null">center_latitude = #{centerLatitude},</if>
+            <if test="centerLongitude != null">center_longitude = #{centerLongitude},</if>
+            <if test="radius != null">radius = #{radius},</if>
+            <if test="visitCount != null">visit_count = #{visitCount},</if>
+            <if test="uniqueUsers != null">unique_users = #{uniqueUsers},</if>
+            <if test="peakHour != null">peak_hour = #{peakHour},</if>
+            <if test="avgDuration != null">avg_duration = #{avgDuration},</if>
+            <if test="relatedPois != null">related_pois = #{relatedPois},</if>
+            <if test="hotspotImages != null">hotspot_images = #{hotspotImages},</if>
+            <if test="analysisTaskId != null">analysis_task_id = #{analysisTaskId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where hotspot_id = #{hotspotId}
+    </update>
+
+    <delete id="deleteRouteHotspotZoneByHotspotId" parameterType="Long">
+        delete from route_hotspot_zone where hotspot_id = #{hotspotId}
+    </delete>
+
+    <delete id="deleteRouteHotspotZoneByHotspotIds" parameterType="String">
+        delete from route_hotspot_zone where hotspot_id in 
+        <foreach item="hotspotId" collection="array" open="(" separator="," close=")">
+            #{hotspotId}
+        </foreach>
+    </delete>
+
+    <!-- 查询分析任务ID（关联分析任务表）选项列表 -->
+    <select id="selectAnalysisTaskIdOptions" resultType="java.util.HashMap">
+        select 
+            task_id,
+            task_name as taskName
+        from route_analysis_task
+        order by task_id desc
+    </select>
+</mapper>

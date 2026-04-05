@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.system.mapper.ChatMessageMapper">
+    
+    <resultMap type="ChatMessage" id="ChatMessageResult">
+        <result property="id"            column="id"            />
+        <result property="senderId"      column="sender_id"     />
+        <result property="senderName"    column="sender_name"   />
+        <result property="senderAvatar"  column="sender_avatar" />
+        <result property="receiverId"    column="receiver_id"   />
+        <result property="receiverName"  column="receiver_name" />
+        <result property="receiverAvatar" column="receiver_avatar"/>
+        <result property="message"       column="message"       />
+        <result property="messageType"   column="message_type"  />
+        <result property="timestamp"     column="timestamp"     />
+        <result property="readStatus"    column="read_status"   />
+        <result property="createTime"    column="created_time"  />
+        <result property="updateTime"    column="updated_time"  />
+    </resultMap>
+
+    <sql id="selectChatMessageVo">
+        select cm.id, cm.sender_id, cm.sender_name, cm.receiver_id, cm.receiver_name, 
+               sender.avatar as sender_avatar, receiver.avatar as receiver_avatar,
+               cm.message, cm.message_type, cm.timestamp, cm.read_status, 
+               cm.created_time, cm.updated_time 
+        from chat_messages cm
+        left join sys_user sender on cm.sender_id = sender.user_id
+        left join sys_user receiver on cm.receiver_id = receiver.user_id
+    </sql>
+
+    <select id="selectChatMessageList" parameterType="ChatMessage" resultMap="ChatMessageResult">
+        <include refid="selectChatMessageVo"/>
+        <where>  
+            <if test="senderId != null and senderId != ''"> and cm.sender_id = #{senderId}</if>
+            <if test="senderName != null and senderName != ''"> and cm.sender_name like concat('%', #{senderName}, '%')</if>
+            <if test="receiverId != null and receiverId != ''"> and cm.receiver_id = #{receiverId}</if>
+            <if test="receiverName != null and receiverName != ''"> and cm.receiver_name like concat('%', #{receiverName}, '%')</if>
+            <if test="message != null and message != ''"> and cm.message like concat('%', #{message}, '%')</if>
+            <if test="messageType != null and messageType != ''"> and cm.message_type = #{messageType}</if>
+            <if test="readStatus != null and readStatus != ''"> and cm.read_status = #{readStatus}</if>
+        </where>
+        order by cm.timestamp desc
+    </select>
+    
+    <select id="selectChatMessageById" parameterType="Long" resultMap="ChatMessageResult">
+        <include refid="selectChatMessageVo"/>
+        where cm.id = #{id}
+    </select>
+
+    <select id="selectChatMessagesBetweenUsers" resultMap="ChatMessageResult">
+        <include refid="selectChatMessageVo"/>
+        where (cm.sender_id = #{userId1} and cm.receiver_id = #{userId2}) 
+           or (cm.sender_id = #{userId2} and cm.receiver_id = #{userId1})
+        order by cm.timestamp asc
+    </select>
+
+    <select id="selectUnreadMessages" resultMap="ChatMessageResult">
+        <include refid="selectChatMessageVo"/>
+        where cm.receiver_id = #{userId} and cm.read_status != 'read'
+        order by cm.timestamp desc
+    </select>
+
+    <select id="countUnreadMessages" resultType="int">
+        select count(*) from chat_messages cm
+        where cm.receiver_id = #{userId} and cm.read_status != 'read'
+    </select>
+        
+    <insert id="insertChatMessage" parameterType="ChatMessage" useGeneratedKeys="true" keyProperty="id">
+        insert into chat_messages
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="senderId != null and senderId != ''">sender_id,</if>
+            <if test="senderName != null and senderName != ''">sender_name,</if>
+            <if test="receiverId != null and receiverId != ''">receiver_id,</if>
+            <if test="receiverName != null and receiverName != ''">receiver_name,</if>
+            <if test="message != null and message != ''">message,</if>
+            <if test="messageType != null and messageType != ''">message_type,</if>
+            <if test="timestamp != null">timestamp,</if>
+            <if test="readStatus != null and readStatus != ''">read_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="senderId != null and senderId != ''">#{senderId},</if>
+            <if test="senderName != null and senderName != ''">#{senderName},</if>
+            <if test="receiverId != null and receiverId != ''">#{receiverId},</if>
+            <if test="receiverName != null and receiverName != ''">#{receiverName},</if>
+            <if test="message != null and message != ''">#{message},</if>
+            <if test="messageType != null and messageType != ''">#{messageType},</if>
+            <if test="timestamp != null">#{timestamp},</if>
+            <if test="readStatus != null and readStatus != ''">#{readStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateChatMessage" parameterType="ChatMessage">
+        update chat_messages
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="senderId != null and senderId != ''">sender_id = #{senderId},</if>
+            <if test="senderName != null and senderName != ''">sender_name = #{senderName},</if>
+            <if test="receiverId != null and receiverId != ''">receiver_id = #{receiverId},</if>
+            <if test="receiverName != null and receiverName != ''">receiver_name = #{receiverName},</if>
+            <if test="message != null and message != ''">message = #{message},</if>
+            <if test="messageType != null and messageType != ''">message_type = #{messageType},</if>
+            <if test="timestamp != null">timestamp = #{timestamp},</if>
+            <if test="readStatus != null and readStatus != ''">read_status = #{readStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="markMessagesAsRead">
+        update chat_messages set read_status = 'read'
+        where sender_id = #{senderId} and receiver_id = #{receiverId} and read_status != 'read'
+    </update>
+
+    <delete id="deleteChatMessageById" parameterType="Long">
+        delete from chat_messages where id = #{id}
+    </delete>
+
+    <delete id="deleteChatMessageByIds" parameterType="String">
+        delete from chat_messages where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.route.mapper.RouteAnalysisTaskMapper">
+    
+    <resultMap type="RouteAnalysisTask" id="RouteAnalysisTaskResult">
+        <result property="taskId"    column="task_id"    />
+        <result property="taskName"    column="task_name"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="userName"    />
+        <result property="trajectoryId"    column="trajectory_id"    />
+        <result property="trajectoryName"    column="trajectoryName"    />
+        <result property="startLocation"    column="startLocation"    />
+        <result property="endLocation"    column="endLocation"    />
+        <result property="trajectoryData"    column="trajectoryData"    />
+        <result property="algorithmType"    column="algorithm_type"    />
+        <result property="algorithmParams"    column="algorithm_params"    />
+        <result property="taskStatus"    column="task_status"    />
+        <result property="progressPercent"    column="progress_percent"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="resultData"    column="result_data"    />
+        <result property="errorMessage"    column="error_message"    />
+        <result property="executionTime"    column="execution_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRouteAnalysisTaskVo">
+        select t.task_id, t.task_name, t.user_id, fk_userId.user_name as userName, t.trajectory_id, fk_trajectoryId.trajectory_name as trajectoryName, fk_trajectoryId.start_location as startLocation, fk_trajectoryId.end_location as endLocation, fk_trajectoryId.trajectory_data as trajectoryData, t.algorithm_type, t.algorithm_params, t.task_status, t.progress_percent, t.start_time, t.end_time, t.result_data, t.error_message, t.execution_time, t.del_flag, t.create_by, t.create_time, t.update_by, t.update_time, t.remark
+        from route_analysis_task t
+        left join sys_user fk_userId on t.user_id = fk_userId.user_id
+        left join route_trajectory_info fk_trajectoryId on t.trajectory_id = fk_trajectoryId.trajectory_id
+    </sql>
+
+    <select id="selectRouteAnalysisTaskList" parameterType="RouteAnalysisTask" resultMap="RouteAnalysisTaskResult">
+        <include refid="selectRouteAnalysisTaskVo"/>
+        <where>  
+            <if test="taskName != null  and taskName != ''"> and t.task_name like concat('%', #{taskName}, '%')</if>
+            <if test="userId != null "> and t.user_id = #{userId}</if>
+            <if test="trajectoryId != null "> and t.trajectory_id = #{trajectoryId}</if>
+            <if test="algorithmType != null  and algorithmType != ''"> and t.algorithm_type = #{algorithmType}</if>
+            <if test="algorithmParams != null  and algorithmParams != ''"> and t.algorithm_params = #{algorithmParams}</if>
+            <if test="taskStatus != null  and taskStatus != ''"> and t.task_status = #{taskStatus}</if>
+            <if test="progressPercent != null "> and t.progress_percent = #{progressPercent}</if>
+            <if test="startTime != null "> and t.start_time = #{startTime}</if>
+            <if test="endTime != null "> and t.end_time = #{endTime}</if>
+            <if test="resultData != null  and resultData != ''"> and t.result_data = #{resultData}</if>
+            <if test="errorMessage != null  and errorMessage != ''"> and t.error_message = #{errorMessage}</if>
+            <if test="executionTime != null "> and t.execution_time = #{executionTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectRouteAnalysisTaskByTaskId" parameterType="String" resultMap="RouteAnalysisTaskResult">
+        <include refid="selectRouteAnalysisTaskVo"/>
+        where t.task_id = #{taskId}
+    </select>
+
+    <insert id="insertRouteAnalysisTask" parameterType="RouteAnalysisTask">
+        insert into route_analysis_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">task_id,</if>
+            <if test="taskName != null">task_name,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="trajectoryId != null">trajectory_id,</if>
+            <if test="algorithmType != null and algorithmType != ''">algorithm_type,</if>
+            <if test="algorithmParams != null">algorithm_params,</if>
+            <if test="taskStatus != null">task_status,</if>
+            <if test="progressPercent != null">progress_percent,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="resultData != null">result_data,</if>
+            <if test="errorMessage != null">error_message,</if>
+            <if test="executionTime != null">execution_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">#{taskId},</if>
+            <if test="taskName != null">#{taskName},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="trajectoryId != null">#{trajectoryId},</if>
+            <if test="algorithmType != null and algorithmType != ''">#{algorithmType},</if>
+            <if test="algorithmParams != null">#{algorithmParams},</if>
+            <if test="taskStatus != null">#{taskStatus},</if>
+            <if test="progressPercent != null">#{progressPercent},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="resultData != null">#{resultData},</if>
+            <if test="errorMessage != null">#{errorMessage},</if>
+            <if test="executionTime != null">#{executionTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRouteAnalysisTask" parameterType="RouteAnalysisTask">
+        update route_analysis_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskName != null">task_name = #{taskName},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="trajectoryId != null">trajectory_id = #{trajectoryId},</if>
+            <if test="algorithmType != null and algorithmType != ''">algorithm_type = #{algorithmType},</if>
+            <if test="algorithmParams != null">algorithm_params = #{algorithmParams},</if>
+            <if test="taskStatus != null">task_status = #{taskStatus},</if>
+            <if test="progressPercent != null">progress_percent = #{progressPercent},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="resultData != null">result_data = #{resultData},</if>
+            <if test="errorMessage != null">error_message = #{errorMessage},</if>
+            <if test="executionTime != null">execution_time = #{executionTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where task_id = #{taskId}
+    </update>
+
+    <delete id="deleteRouteAnalysisTaskByTaskId" parameterType="String">
+        delete from route_analysis_task where task_id = #{taskId}
+    </delete>
+
+    <delete id="deleteRouteAnalysisTaskByTaskIds" parameterType="String">
+        delete from route_analysis_task where task_id in 
+        <foreach item="taskId" collection="array" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </delete>
+
+    <!-- 查询用户ID（关联sys_user.user_id）（关联用户信息表）选项列表 -->
+    <select id="selectUserIdOptions" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select 
+            user_id,
+            user_name as userName
+        from sys_user
+        <where>
+            <if test="currentUserId != null and currentUserId != 1">
+                and user_id = #{currentUserId}
+            </if>
+        </where>
+        order by user_id desc
+    </select>
+
+    <!-- 查询轨迹ID（关联route_trajectory_info.trajectory_id）（关联出行轨迹信息表）选项列表 -->
+    <select id="selectTrajectoryIdOptions" resultType="java.util.HashMap">
+        select 
+            trajectory_id,
+            trajectory_name as trajectoryName,
+            start_location as startLocation,
+            end_location as endLocation,
+            trajectory_data as trajectoryData
+        from route_trajectory_info
+        order by trajectory_id desc
+    </select>
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.route.mapper.RouteUserPreferenceMapper">
+    
+    <resultMap type="RouteUserPreference" id="RouteUserPreferenceResult">
+        <result property="preferenceId"    column="preference_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="userName"    />
+        <result property="preferenceType"    column="preference_type"    />
+        <result property="preferenceKey"    column="preference_key"    />
+        <result property="preferenceValue"    column="preference_value"    />
+        <result property="preferenceScore"    column="preference_score"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRouteUserPreferenceVo">
+        select t.preference_id, t.user_id, fk_userId.user_name as userName, t.preference_type, t.preference_key, t.preference_value, t.preference_score, t.create_by, t.create_time, t.update_by, t.update_time, t.remark
+        from route_user_preference t
+        left join sys_user fk_userId on t.user_id = fk_userId.user_id
+    </sql>
+
+    <select id="selectRouteUserPreferenceList" parameterType="RouteUserPreference" resultMap="RouteUserPreferenceResult">
+        <include refid="selectRouteUserPreferenceVo"/>
+        <where>  
+            <if test="userId != null "> and t.user_id = #{userId}</if>
+            <if test="preferenceType != null  and preferenceType != ''"> and t.preference_type = #{preferenceType}</if>
+            <if test="preferenceKey != null  and preferenceKey != ''"> and t.preference_key = #{preferenceKey}</if>
+            <if test="preferenceValue != null  and preferenceValue != ''"> and t.preference_value = #{preferenceValue}</if>
+            <if test="preferenceScore != null "> and t.preference_score = #{preferenceScore}</if>
+        </where>
+    </select>
+    
+    <select id="selectRouteUserPreferenceByPreferenceId" parameterType="Long" resultMap="RouteUserPreferenceResult">
+        <include refid="selectRouteUserPreferenceVo"/>
+        where t.preference_id = #{preferenceId}
+    </select>
+
+    <insert id="insertRouteUserPreference" parameterType="RouteUserPreference" useGeneratedKeys="true" keyProperty="preferenceId">
+        insert into route_user_preference
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="preferenceType != null and preferenceType != ''">preference_type,</if>
+            <if test="preferenceKey != null and preferenceKey != ''">preference_key,</if>
+            <if test="preferenceValue != null">preference_value,</if>
+            <if test="preferenceScore != null">preference_score,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="preferenceType != null and preferenceType != ''">#{preferenceType},</if>
+            <if test="preferenceKey != null and preferenceKey != ''">#{preferenceKey},</if>
+            <if test="preferenceValue != null">#{preferenceValue},</if>
+            <if test="preferenceScore != null">#{preferenceScore},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRouteUserPreference" parameterType="RouteUserPreference">
+        update route_user_preference
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="preferenceType != null and preferenceType != ''">preference_type = #{preferenceType},</if>
+            <if test="preferenceKey != null and preferenceKey != ''">preference_key = #{preferenceKey},</if>
+            <if test="preferenceValue != null">preference_value = #{preferenceValue},</if>
+            <if test="preferenceScore != null">preference_score = #{preferenceScore},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where preference_id = #{preferenceId}
+    </update>
+
+    <delete id="deleteRouteUserPreferenceByPreferenceId" parameterType="Long">
+        delete from route_user_preference where preference_id = #{preferenceId}
+    </delete>
+
+    <delete id="deleteRouteUserPreferenceByPreferenceIds" parameterType="String">
+        delete from route_user_preference where preference_id in 
+        <foreach item="preferenceId" collection="array" open="(" separator="," close=")">
+            #{preferenceId}
+        </foreach>
+    </delete>
+
+    <!-- 查询用户ID（关联sys_user.user_id）（关联用户信息表）选项列表 -->
+    <select id="selectUserIdOptions" resultType="java.util.HashMap">
+        select 
+            user_id,
+            user_name as userName
+        from sys_user
+        order by user_id desc
+    </select>
+</mapper>

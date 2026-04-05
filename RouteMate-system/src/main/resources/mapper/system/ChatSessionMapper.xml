@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.system.mapper.ChatSessionMapper">
+    
+    <resultMap type="ChatSession" id="ChatSessionResult">
+        <result property="id"              column="id"                />
+        <result property="userId"          column="user_id"           />
+        <result property="contactId"       column="contact_id"        />
+        <result property="contactName"     column="contact_name"      />
+        <result property="contactAvatar"   column="contact_avatar"    />
+        <result property="lastMessage"     column="last_message"      />
+        <result property="lastMessageType" column="last_message_type" />
+        <result property="lastMessageTime" column="last_message_time" />
+        <result property="unreadCount"     column="unread_count"      />
+        <result property="createTime"      column="created_time"      />
+        <result property="updateTime"      column="updated_time"      />
+    </resultMap>
+
+    <sql id="selectChatSessionVo">
+        select cs.id, cs.user_id, cs.contact_id, cs.contact_name, 
+               u.avatar as contact_avatar,
+               cs.last_message, cs.last_message_type, cs.last_message_time, cs.unread_count, 
+               cs.created_time, cs.updated_time 
+        from chat_sessions cs
+        left join sys_user u on cs.contact_id = u.user_id
+    </sql>
+
+    <select id="selectChatSessionList" parameterType="ChatSession" resultMap="ChatSessionResult">
+        <include refid="selectChatSessionVo"/>
+        <where>  
+            <if test="userId != null  and userId != ''"> and cs.user_id = #{userId}</if>
+            <if test="contactId != null  and contactId != ''"> and cs.contact_id = #{contactId}</if>
+            <if test="contactName != null  and contactName != ''"> and cs.contact_name like concat('%', #{contactName}, '%')</if>
+            <if test="lastMessage != null  and lastMessage != ''"> and cs.last_message like concat('%', #{lastMessage}, '%')</if>
+        </where>
+        order by cs.last_message_time desc
+    </select>
+    
+    <select id="selectChatSessionById" parameterType="Long" resultMap="ChatSessionResult">
+        <include refid="selectChatSessionVo"/>
+        where cs.id = #{id}
+    </select>
+
+    <select id="selectChatSessionsByUserId" resultMap="ChatSessionResult">
+        <include refid="selectChatSessionVo"/>
+        where cs.user_id = #{userId}
+        order by cs.last_message_time desc
+    </select>
+
+    <select id="selectChatSessionByUserAndContact" resultMap="ChatSessionResult">
+        <include refid="selectChatSessionVo"/>
+        where cs.user_id = #{userId} and cs.contact_id = #{contactId}
+    </select>
+        
+    <insert id="insertChatSession" parameterType="ChatSession" useGeneratedKeys="true" keyProperty="id">
+        insert into chat_sessions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="contactId != null and contactId != ''">contact_id,</if>
+            <if test="contactName != null and contactName != ''">contact_name,</if>
+            <if test="contactAvatar != null and contactAvatar != ''">contact_avatar,</if>
+            <if test="lastMessage != null">last_message,</if>
+            <if test="lastMessageType != null and lastMessageType != ''">last_message_type,</if>
+            <if test="lastMessageTime != null">last_message_time,</if>
+            <if test="unreadCount != null">unread_count,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="contactId != null and contactId != ''">#{contactId},</if>
+            <if test="contactName != null and contactName != ''">#{contactName},</if>
+            <if test="contactAvatar != null and contactAvatar != ''">#{contactAvatar},</if>
+            <if test="lastMessage != null">#{lastMessage},</if>
+            <if test="lastMessageType != null and lastMessageType != ''">#{lastMessageType},</if>
+            <if test="lastMessageTime != null">#{lastMessageTime},</if>
+            <if test="unreadCount != null">#{unreadCount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateChatSession" parameterType="ChatSession">
+        update chat_sessions
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="contactId != null and contactId != ''">contact_id = #{contactId},</if>
+            <if test="contactName != null and contactName != ''">contact_name = #{contactName},</if>
+            <if test="contactAvatar != null">contact_avatar = #{contactAvatar},</if>
+            <if test="lastMessage != null">last_message = #{lastMessage},</if>
+            <if test="lastMessageType != null">last_message_type = #{lastMessageType},</if>
+            <if test="lastMessageTime != null">last_message_time = #{lastMessageTime},</if>
+            <if test="unreadCount != null">unread_count = #{unreadCount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateLastMessage">
+        update chat_sessions 
+        set last_message = #{lastMessage}, last_message_time = now()
+        where user_id = #{userId} and contact_id = #{contactId}
+    </update>
+
+    <update id="incrementUnreadCount">
+        update chat_sessions 
+        set unread_count = unread_count + 1, last_message_time = now()
+        where user_id = #{userId} and contact_id = #{contactId}
+    </update>
+
+    <update id="clearUnreadCount">
+        update chat_sessions 
+        set unread_count = 0
+        where user_id = #{userId} and contact_id = #{contactId}
+    </update>
+
+    <delete id="deleteChatSessionById" parameterType="Long">
+        delete from chat_sessions where id = #{id}
+    </delete>
+
+    <delete id="deleteChatSessionByIds" parameterType="String">
+        delete from chat_sessions where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

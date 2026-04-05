@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.route.mapper.RouteStatisticsSummaryMapper">
+    
+    <resultMap type="RouteStatisticsSummary" id="RouteStatisticsSummaryResult">
+        <result property="statId"    column="stat_id"    />
+        <result property="statType"    column="stat_type"    />
+        <result property="statKey"    column="stat_key"    />
+        <result property="statValue"    column="stat_value"    />
+        <result property="statCount"    column="stat_count"    />
+        <result property="statDate"    column="stat_date"    />
+        <result property="statPeriod"    column="stat_period"    />
+        <result property="extraData"    column="extra_data"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRouteStatisticsSummaryVo">
+        select t.stat_id, t.stat_type, t.stat_key, t.stat_value, t.stat_count, t.stat_date, t.stat_period, t.extra_data, t.create_by, t.create_time, t.update_by, t.update_time, t.remark
+        from route_statistics_summary t
+    </sql>
+
+    <select id="selectRouteStatisticsSummaryList" parameterType="RouteStatisticsSummary" resultMap="RouteStatisticsSummaryResult">
+        <include refid="selectRouteStatisticsSummaryVo"/>
+        <where>  
+            <if test="statType != null  and statType != ''"> and t.stat_type = #{statType}</if>
+            <if test="statKey != null  and statKey != ''"> and t.stat_key = #{statKey}</if>
+            <if test="statValue != null "> and t.stat_value = #{statValue}</if>
+            <if test="statCount != null "> and t.stat_count = #{statCount}</if>
+            <if test="statDate != null "> and t.stat_date = #{statDate}</if>
+            <if test="statPeriod != null  and statPeriod != ''"> and t.stat_period = #{statPeriod}</if>
+            <if test="extraData != null  and extraData != ''"> and t.extra_data = #{extraData}</if>
+        </where>
+    </select>
+    
+    <select id="selectRouteStatisticsSummaryByStatId" parameterType="Long" resultMap="RouteStatisticsSummaryResult">
+        <include refid="selectRouteStatisticsSummaryVo"/>
+        where t.stat_id = #{statId}
+    </select>
+
+    <insert id="insertRouteStatisticsSummary" parameterType="RouteStatisticsSummary" useGeneratedKeys="true" keyProperty="statId">
+        insert into route_statistics_summary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="statType != null and statType != ''">stat_type,</if>
+            <if test="statKey != null and statKey != ''">stat_key,</if>
+            <if test="statValue != null">stat_value,</if>
+            <if test="statCount != null">stat_count,</if>
+            <if test="statDate != null">stat_date,</if>
+            <if test="statPeriod != null">stat_period,</if>
+            <if test="extraData != null">extra_data,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="statType != null and statType != ''">#{statType},</if>
+            <if test="statKey != null and statKey != ''">#{statKey},</if>
+            <if test="statValue != null">#{statValue},</if>
+            <if test="statCount != null">#{statCount},</if>
+            <if test="statDate != null">#{statDate},</if>
+            <if test="statPeriod != null">#{statPeriod},</if>
+            <if test="extraData != null">#{extraData},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRouteStatisticsSummary" parameterType="RouteStatisticsSummary">
+        update route_statistics_summary
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="statType != null and statType != ''">stat_type = #{statType},</if>
+            <if test="statKey != null and statKey != ''">stat_key = #{statKey},</if>
+            <if test="statValue != null">stat_value = #{statValue},</if>
+            <if test="statCount != null">stat_count = #{statCount},</if>
+            <if test="statDate != null">stat_date = #{statDate},</if>
+            <if test="statPeriod != null">stat_period = #{statPeriod},</if>
+            <if test="extraData != null">extra_data = #{extraData},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where stat_id = #{statId}
+    </update>
+
+    <delete id="deleteRouteStatisticsSummaryByStatId" parameterType="Long">
+        delete from route_statistics_summary where stat_id = #{statId}
+    </delete>
+
+    <delete id="deleteRouteStatisticsSummaryByStatIds" parameterType="String">
+        delete from route_statistics_summary where stat_id in 
+        <foreach item="statId" collection="array" open="(" separator="," close=")">
+            #{statId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.route.mapper.RoutePoiDetailMapper">
+    
+    <resultMap type="RoutePoiDetail" id="RoutePoiDetailResult">
+        <result property="poiId"    column="poi_id"    />
+        <result property="poiName"    column="poi_name"    />
+        <result property="poiType"    column="poi_type"    />
+        <result property="poiCategory"    column="poi_category"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="longitude"    column="longitude"    />
+        <result property="address"    column="address"    />
+        <result property="poiDesc"    column="poi_desc"    />
+        <result property="poiImages"    column="poi_images"    />
+        <result property="contactPhone"    column="contact_phone"    />
+        <result property="businessHours"    column="business_hours"    />
+        <result property="rating"    column="rating"    />
+        <result property="contributorId"    column="contributor_id"    />
+        <result property="userName"    column="userName"    />
+        <result property="dataSource"    column="data_source"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="auditBy"    column="audit_by"    />
+        <result property="nickName"    column="nickName"    />
+        <result property="auditTime"    column="audit_time"    />
+        <result property="auditRemark"    column="audit_remark"    />
+        <result property="visitCount"    column="visit_count"    />
+        <result property="likeCount"    column="like_count"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRoutePoiDetailVo">
+        select t.poi_id, t.poi_name, t.poi_type, t.poi_category, t.latitude, t.longitude, t.address, t.poi_desc, t.poi_images, t.contact_phone, t.business_hours, t.rating, t.contributor_id, fk_contributorId.user_name as userName, t.data_source, t.audit_status, t.audit_by, fk_auditBy.nick_name as nickName, t.audit_time, t.audit_remark, t.visit_count, t.like_count, t.del_flag, t.create_by, t.create_time, t.update_by, t.update_time, t.remark
+        from route_poi_detail t
+        left join sys_user fk_contributorId on t.contributor_id = fk_contributorId.user_id
+        left join sys_user fk_auditBy on t.audit_by = fk_auditBy.user_id
+    </sql>
+
+    <select id="selectRoutePoiDetailList" parameterType="RoutePoiDetail" resultMap="RoutePoiDetailResult">
+        <include refid="selectRoutePoiDetailVo"/>
+        <where>  
+            <if test="poiName != null  and poiName != ''"> and t.poi_name like concat('%', #{poiName}, '%')</if>
+            <if test="poiType != null  and poiType != ''"> and t.poi_type = #{poiType}</if>
+            <if test="poiCategory != null  and poiCategory != ''"> and t.poi_category = #{poiCategory}</if>
+            <if test="latitude != null "> and t.latitude = #{latitude}</if>
+            <if test="longitude != null "> and t.longitude = #{longitude}</if>
+            <if test="address != null  and address != ''"> and t.address = #{address}</if>
+            <if test="poiDesc != null  and poiDesc != ''"> and t.poi_desc = #{poiDesc}</if>
+            <if test="poiImages != null  and poiImages != ''"> and t.poi_images = #{poiImages}</if>
+            <if test="contactPhone != null  and contactPhone != ''"> and t.contact_phone = #{contactPhone}</if>
+            <if test="businessHours != null  and businessHours != ''"> and t.business_hours = #{businessHours}</if>
+            <if test="rating != null "> and t.rating = #{rating}</if>
+            <if test="contributorId != null "> and t.contributor_id = #{contributorId}</if>
+            <if test="dataSource != null  and dataSource != ''"> and t.data_source = #{dataSource}</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and t.audit_status = #{auditStatus}</if>
+            <if test="auditBy != null "> and t.audit_by = #{auditBy}</if>
+            <if test="auditTime != null "> and t.audit_time = #{auditTime}</if>
+            <if test="auditRemark != null  and auditRemark != ''"> and t.audit_remark = #{auditRemark}</if>
+            <if test="visitCount != null "> and t.visit_count = #{visitCount}</if>
+            <if test="likeCount != null "> and t.like_count = #{likeCount}</if>
+        </where>
+    </select>
+    
+    <select id="selectRoutePoiDetailByPoiId" parameterType="Long" resultMap="RoutePoiDetailResult">
+        <include refid="selectRoutePoiDetailVo"/>
+        where t.poi_id = #{poiId}
+    </select>
+
+    <insert id="insertRoutePoiDetail" parameterType="RoutePoiDetail" useGeneratedKeys="true" keyProperty="poiId">
+        insert into route_poi_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="poiName != null and poiName != ''">poi_name,</if>
+            <if test="poiType != null and poiType != ''">poi_type,</if>
+            <if test="poiCategory != null">poi_category,</if>
+            <if test="latitude != null">latitude,</if>
+            <if test="longitude != null">longitude,</if>
+            <if test="address != null">address,</if>
+            <if test="poiDesc != null">poi_desc,</if>
+            <if test="poiImages != null">poi_images,</if>
+            <if test="contactPhone != null">contact_phone,</if>
+            <if test="businessHours != null">business_hours,</if>
+            <if test="rating != null">rating,</if>
+            <if test="contributorId != null">contributor_id,</if>
+            <if test="dataSource != null">data_source,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="auditBy != null">audit_by,</if>
+            <if test="auditTime != null">audit_time,</if>
+            <if test="auditRemark != null">audit_remark,</if>
+            <if test="visitCount != null">visit_count,</if>
+            <if test="likeCount != null">like_count,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="poiName != null and poiName != ''">#{poiName},</if>
+            <if test="poiType != null and poiType != ''">#{poiType},</if>
+            <if test="poiCategory != null">#{poiCategory},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
+            <if test="address != null">#{address},</if>
+            <if test="poiDesc != null">#{poiDesc},</if>
+            <if test="poiImages != null">#{poiImages},</if>
+            <if test="contactPhone != null">#{contactPhone},</if>
+            <if test="businessHours != null">#{businessHours},</if>
+            <if test="rating != null">#{rating},</if>
+            <if test="contributorId != null">#{contributorId},</if>
+            <if test="dataSource != null">#{dataSource},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="auditBy != null">#{auditBy},</if>
+            <if test="auditTime != null">#{auditTime},</if>
+            <if test="auditRemark != null">#{auditRemark},</if>
+            <if test="visitCount != null">#{visitCount},</if>
+            <if test="likeCount != null">#{likeCount},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRoutePoiDetail" parameterType="RoutePoiDetail">
+        update route_poi_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="poiName != null and poiName != ''">poi_name = #{poiName},</if>
+            <if test="poiType != null and poiType != ''">poi_type = #{poiType},</if>
+            <if test="poiCategory != null">poi_category = #{poiCategory},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="poiDesc != null">poi_desc = #{poiDesc},</if>
+            <if test="poiImages != null">poi_images = #{poiImages},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="businessHours != null">business_hours = #{businessHours},</if>
+            <if test="rating != null">rating = #{rating},</if>
+            <if test="contributorId != null">contributor_id = #{contributorId},</if>
+            <if test="dataSource != null">data_source = #{dataSource},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="auditBy != null">audit_by = #{auditBy},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="auditRemark != null">audit_remark = #{auditRemark},</if>
+            <if test="visitCount != null">visit_count = #{visitCount},</if>
+            <if test="likeCount != null">like_count = #{likeCount},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where poi_id = #{poiId}
+    </update>
+
+    <delete id="deleteRoutePoiDetailByPoiId" parameterType="Long">
+        delete from route_poi_detail where poi_id = #{poiId}
+    </delete>
+
+    <delete id="deleteRoutePoiDetailByPoiIds" parameterType="String">
+        delete from route_poi_detail where poi_id in 
+        <foreach item="poiId" collection="array" open="(" separator="," close=")">
+            #{poiId}
+        </foreach>
+    </delete>
+
+    <!-- 查询贡献者ID（关联sys_user.user_id）（关联用户信息表）选项列表 -->
+    <select id="selectContributorIdOptions" resultType="java.util.HashMap">
+        select 
+            user_id,
+            user_name as userName
+        from sys_user
+        order by user_id desc
+    </select>
+
+    <!-- 查询审核人ID（关联用户信息表）选项列表 -->
+    <select id="selectAuditByOptions" resultType="java.util.HashMap">
+        select 
+            user_id,
+            nick_name as nickName
+        from sys_user
+        order by user_id desc
+    </select>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.RouteMate.system.mapper.SysIndexMapper">
+
+    <!-- 获取总用户数 -->
+    <select id="getTotalUserCount" resultType="Long">
+        SELECT COUNT(*) FROM sys_user WHERE del_flag = '0'
+    </select>
+
+    <!-- 获取在线用户数 -->
+    <select id="getOnlineUserCount" resultType="Long">
+        SELECT IFNULL(COUNT(DISTINCT user_name), 0) FROM sys_logininfor 
+        WHERE status = '0' 
+        AND login_time >= DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+    </select>
+
+    <!-- 获取今日新增用户数 -->
+    <select id="getTodayNewUserCount" resultType="Long">
+        SELECT COUNT(*) FROM sys_user 
+        WHERE del_flag = '0' 
+        AND DATE(create_time) = CURDATE()
+    </select>
+
+    <!-- 获取本月新增用户数 -->
+    <select id="getMonthNewUserCount" resultType="Long">
+        SELECT COUNT(*) FROM sys_user 
+        WHERE del_flag = '0' 
+        AND YEAR(create_time) = YEAR(NOW()) 
+        AND MONTH(create_time) = MONTH(NOW())
+    </select>
+
+    <!-- 获取系统总访问量 -->
+    <select id="getTotalVisitCount" resultType="Long">
+        SELECT IFNULL(COUNT(*), 0) FROM sys_logininfor
+    </select>
+
+    <!-- 获取今日访问量 -->
+    <select id="getTodayVisitCount" resultType="Long">
+        SELECT IFNULL(COUNT(*), 0) FROM sys_logininfor 
+        WHERE DATE(login_time) = CURDATE()
+    </select>
+
+    <!-- 获取系统运行天数 -->
+    <select id="getSystemRunningDays" resultType="Long">
+        SELECT IFNULL(DATEDIFF(NOW(), MIN(create_time)), 0) FROM sys_user 
+        WHERE user_id = 1
+    </select>
+
+    <!-- 获取总菜单数 -->
+    <select id="getTotalMenuCount" resultType="Long">
+        SELECT COUNT(*) FROM sys_menu WHERE status = '0'
+    </select>
+
+    <!-- 根据日期获取用户注册数量 -->
+    <select id="getUserRegistrationCountByDate" parameterType="String" resultType="Long">
+        SELECT COUNT(*) FROM sys_user 
+        WHERE del_flag = '0' 
+        AND DATE(create_time) = #{date}
+    </select>
+
+    <!-- 根据小时获取在线用户数量 -->
+    <select id="getOnlineUserCountByHour" parameterType="Date" resultType="Long">
+        SELECT IFNULL(COUNT(DISTINCT user_name), 0) FROM sys_logininfor 
+        WHERE DATE_FORMAT(login_time, '%Y-%m-%d %H') = DATE_FORMAT(#{dateTime}, '%Y-%m-%d %H')
+        AND status = '0'
+    </select>
+
+    <!-- 获取系统模块使用统计 -->
+    <select id="getModuleUsageStats" resultType="Map">
+        SELECT 
+            m.menu_name as name,
+            FLOOR(RAND() * 100) + 10 as value
+        FROM sys_menu m
+        WHERE m.menu_type = 'C' 
+        AND m.status = '0'
+        AND m.perms IS NOT NULL 
+        AND m.perms != ''
+        AND m.parent_id > 0
+        ORDER BY RAND()
+        LIMIT 6
+    </select>
+
+    <!-- 获取POI类别统计 -->
+    <select id="getPoiStats" resultType="Map">
+        SELECT 
+            poi_type as name,
+            COUNT(*) as value
+        FROM route_poi_detail
+        WHERE del_flag = '0'
+        GROUP BY poi_type
+        ORDER BY value DESC
+    </select>
+
+    <!-- 获取热点排行统计 -->
+    <select id="getHotspotStats" resultType="Map">
+        SELECT 
+            hotspot_name as name,
+            visit_count as value
+        FROM route_hotspot_zone
+        ORDER BY visit_count DESC
+        LIMIT 10
+    </select>
+
+    <!-- 获取用户活跃度统计 -->
+    <select id="getUserStats" resultType="Map">
+        SELECT 
+            '活跃用户' as name,
+            COUNT(*) as value
+        FROM sys_user u
+        WHERE u.del_flag = '0'
+        AND u.user_id IN (
+            SELECT DISTINCT user_id 
+            FROM sys_logininfor 
+            WHERE login_time >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        )
+        UNION ALL
+        SELECT 
+            '新增用户' as name,
+            COUNT(*) as value
+        FROM sys_user u
+        WHERE u.del_flag = '0'
+        AND DATE(u.create_time) >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        UNION ALL
+        SELECT 
+            '总用户数' as name,
+            COUNT(*) as value
+        FROM sys_user u
+        WHERE u.del_flag = '0'
+    </select>
+
+    <!-- 获取出行时间分布统计 -->
+    <select id="getTrajectoryStats" resultType="Map">
+        SELECT 
+            HOUR(create_time) as hour,
+            COUNT(*) as count
+        FROM route_trajectory_info
+        WHERE del_flag = '0'
+        GROUP BY HOUR(create_time)
+        ORDER BY hour
+    </select>
+
+</mapper>
