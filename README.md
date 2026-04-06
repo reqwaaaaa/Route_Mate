@@ -1,5 +1,9 @@
 # *RouteMate*出行服务平台
-[**RouteMate算法模块**](https://github.com/reqwaaaaa/Route_Mate_analysis)
+
+- [**前置算法实验**](https://github.com/reqwaaaaa/FrequentPatternMiningBasedOnHotspotTrajectories)
+- [**RouteMate算法模块**](https://github.com/reqwaaaaa/Route_Mate_analysis)
+- [**RouteMate前端**](https://github.com/reqwaaaaa/Route_Mate_Vue)
+
 ## 快速启动
 Druid 监控后台: `http://localhost:8080/druid/index.html`
 - 用户名：admin
